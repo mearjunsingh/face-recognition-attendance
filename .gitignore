@@ -1,0 +1,5 @@
+venv
+__pycache__
+training_images
+db.sqlite3
+demo.py
