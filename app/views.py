@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from algorithm.management.commands.train import train_images
 from algorithm.register import take_images
 from algorithm.record import track_images
-from app.models import Attendance, Student
+from app.models import Student
 
 
 def index(request):
@@ -40,6 +40,6 @@ def record_attendance(request):
     try:
         track_images()
         context["msg"] = "Attendance recorded successfully!"
-    except Attendance.DoesNotExist:
+    except Student.DoesNotExist:
         context["msg"] = "Student does not exist."
     return render(request, "attendance.html", context)

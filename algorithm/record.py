@@ -29,7 +29,7 @@ def track_images():
             cv2.putText(im, name, (x, y + h), font, 1, (0, 251, 255), 2)  # noqa
 
         cv2.imshow("Taking Attendance", im)
-        if cv2.waitKey(1) == ord("q"):
+        if cv2.waitKey(1) == ord("q"):  # cv2.waitKey(3000)
             break
 
     Attendance.new(serial_number=serial_number)
