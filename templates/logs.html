@@ -1,0 +1,84 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Face Recognition Attendance System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-image: url("{% static 'images/bg.jpg' %}");
+            height: 700px;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
+</head>
+
+<body class="bg-secondary">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <a class="navbar-brand mx-auto" href="/">Face Recognition Attendance System</a>
+    </nav>
+
+    <div class="container mt-5 mx-auto" style="width: 600px;">
+        <form action="." method="get">
+            {% if form.non_field_errors %}
+            {% for n_error in form.non_field_errors %}
+            <div class="alert alert-danger border-light text-center my-5 mx-auto">{{ n_error|escape }}</div>
+            {% endfor %}
+            {% endif %}
+
+            {% for form_field in form %}
+
+            <div class="mb-2">
+                {% if form_field.errors %}
+                {% for error in form_field.errors %}
+                <div class="text-danger">{{ error|escape }}</div>
+                {% endfor %}
+                {% endif %}
+
+                {{ form_field }}
+
+                {% if form_field.help_text %}
+                <div class="text-secondary">{{ form_field.help_text|safe }}</div>
+                {% endif %}
+            </div>
+
+            {% endfor %}
+            <button type="submit" class="border-light btn btn-success btn-lg">See Attendance Logs</button>
+        </form>
+
+        <div class="mt-5 text-center">
+            <h3 class="text-light">{{ name }}</h3>
+
+            {% if show_table %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Attendance Logged Dates</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.timestamp }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td class="text-danger">No Log Found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,10 +1,12 @@
-from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.db.models import F
+from django.shortcuts import render
 
 from algorithm.management.commands.train import train_images
 from algorithm.register import take_images
 from algorithm.record import track_images
-from app.models import Student
+from app.forms import LogForm
+from app.models import Student, Attendance
 
 
 def index(request):
@@ -15,18 +17,16 @@ def index(request):
 def register_student(request):
     serial_number = request.GET.get("serial_number")
     name = request.GET.get("name")
-    context = {"msg": "Stand in front of camera till camera is closed automatically."}
+    msg = "Stand in front of camera till camera is closed automatically."
 
     if serial_number and name:
         if Student.objects.filter(serial_number=serial_number).exists():
-            context["msg"] = "Student with given serial number already exists."
+            msg = "Student with given serial number already exists."
         else:
             take_images(serial_number, name)
-            context[
-                "msg"
-            ] = "Photo Saved Successfully. Train data manually or click on train button."
+            msg = "Photo Saved Successfully. Train data manually or click on train button."
 
-    return render(request, "register.html", context)
+    return render(request, "register.html", {"msg": msg})
 
 
 @login_required(login_url="/admin/login/")
@@ -36,10 +36,30 @@ def train_face_data(request):
 
 
 def record_attendance(request):
-    context = {}
     try:
         track_images()
-        context["msg"] = "Attendance recorded successfully!"
+        msg = "Attendance recorded successfully!"
     except Student.DoesNotExist:
-        context["msg"] = "Student does not exist."
-    return render(request, "attendance.html", context)
+        msg = "Student does not exist."
+    return render(request, "attendance.html", {"msg": msg})
+
+
+def attendance_logs(request):
+    form = LogForm(request.GET or None)
+    if form.is_valid():
+        logs = Attendance.objects.filter(
+            student__serial_number=form.cleaned_data.get("serial_number"),
+        ).values(
+            timestamp=F("date_time"),
+        )
+        return render(
+            request,
+            "logs.html",
+            {
+                "logs": logs,
+                "form": form,
+                "name": form.cleaned_data.get("name"),
+                "show_table": True,
+            },
+        )
+    return render(request, "logs.html", {"form": form})
